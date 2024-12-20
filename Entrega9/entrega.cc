@@ -15,42 +15,46 @@ void read_vector(vector<string> & vect) {
     }
 }
 
-// 11 23 34 55 55 55 55 55 55 65   - 10
-// 1 2 2 2 5 6 7 8 9 10 10 10 11    - 13
-int findFinalGrtEqBinarySearch(const vector<string> & vect, string z, int low, int high) {
-    int index = high;
-    --high;
+bool isStrLowerEqual(string str1, string str2) {
+    bool result;
+    
+    int size1 = str1.size();
+    int size2 = str2.size();
+    
+    if (size1 == size2) {
+        if (size2 == 0) {
+            result = true;
+        } else if (str1[0] != str2[0]) {
+            result = str1[0] < str2[0];
+        } else {
+            str1.pop_back();
+            str2.pop_back();
+            result = isStrLowerEqual(str1, str2);
+        }
+    } else {
+        result = size1 < size2;
+    }
+
+    return result;
+}
+
+int lowerEqualBinarySearch(const vector<string> & vect, string z, int low, int high) {
+    int index;
 
     if (low <= high) {
         int mid = (low + high) / 2;
         if (z <= vect[mid]) {
-            index = findFinalGrtEqBinarySearch(vect, z, low, mid);
-        } else {
-            index = findFinalGrtEqBinarySearch(vect, z, mid + 1, high);
-        }
-    }
-
-    return index;
-}
-
-// 1 2 3 4 5 6 7 8 9 10            -- 10
-int greaterEqualBinarySearch(const vector<string> & vect, string z, int low, int high) {
-    int index;
-
-    if (low > high) {
-        index = 1;
-    } else {
-        int mid = (low + high) / 2;
-        if (z <= vect[mid]) {
-            int leftResult = greaterEqualBinarySearch(vect, z, low, mid - 1);
-            if (leftResult != 1) {
-                index = leftResult;
+            int leftVal = lowerEqualBinarySearch(vect, z, low, mid - 1);
+            if (leftVal != 1) {
+                index = leftVal;
             } else {
                 index = mid;
             }
         } else {
-            index = greaterEqualBinarySearch(vect, z, mid + 1, high);
-        }
+            index = lowerEqualBinarySearch(vect, z, mid + 1, high);
+        } 
+    } else {
+        index = 1;
     }
 
     return index;
@@ -63,12 +67,11 @@ int greaterEqualBinarySearch(const vector<string> & vect, string z, int low, int
 //
 ///////////////////////////////////////////
 int first_position(const vector<string> & vect, string z) {
-    return greaterEqualBinarySearch(vect, z, 0, vect.size() - 1);
-    //return findFinalGrtEqBinarySearch(vect, z, 0, vect.size() - 1);
+    return lowerEqualBinarySearch(vect, z, 0, vect.size() - 1);
 }
-// 8 9 9 12 12 12 12 13 13
 
 int main() {
+
     int n;
     cin >> n;
     
